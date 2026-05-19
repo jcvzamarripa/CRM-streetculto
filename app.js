@@ -585,12 +585,12 @@ function renderWhatsapp() {
   el.querySelector('#wa-open').addEventListener('click', () => {
     const perf = state.perfumes.find(p => p.id === wa.perfumeId);
     if (!perf) return;
-    wa.selected.forEach((cid, i) => {
+    wa.selected.forEach(cid => {
       const client = state.clients.find(c => c.id === cid);
       if (!client) return;
-      const msg  = buildPlainMessage(client.name.split(' ')[0], perf);
-      const url  = `https://wa.me/52${client.phone}?text=${encodeURIComponent(msg)}`;
-      setTimeout(() => window.open(url, '_blank'), i * 400);
+      const msg = buildPlainMessage(client.name.split(' ')[0], perf);
+      const url = `https://wa.me/52${client.phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
     });
   });
 
@@ -630,6 +630,11 @@ function renderWhatsapp() {
     btn.disabled = true;
     setTimeout(() => renderWhatsapp(), 1400);
   });
+}
+
+function buildPlainMessage(firstName, perf) {
+  if (!perf) return '';
+  return `Hola ${firstName}, nos llegó ${perf.name}.\n\n${perf.description}\n\nPrecio: ${fmt(perf.price)}. ¿Te aparto uno?`;
 }
 
 function buildPreview(clients, perf) {
