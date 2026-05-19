@@ -1014,6 +1014,89 @@ img.perfume-photo-img {
   flex-shrink: 0;
 }
 
+/* ── FIRST SALE PANEL ───────────────────────────────────── */
+.first-sale-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1.5px solid color-mix(in srgb, var(--accent), var(--line) 55%);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent), var(--surface) 94%);
+}
+
+.first-sale-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.first-sale-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.first-sale-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.first-sale-panel input,
+.first-sale-panel select {
+  padding: 0 12px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 150ms;
+}
+
+.first-sale-panel input:focus,
+.first-sale-panel select:focus { border-color: var(--accent); }
+
+.first-sale-panel input[readonly] {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.sale-price-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: end;
+}
+
+.sale-price-block.hidden { display: none; }
+
+.sale-diff-badge {
+  grid-column: 1 / -1;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.badge-exact    { background: color-mix(in srgb, var(--accent), transparent 82%); color: var(--accent); }
+.badge-discount { background: color-mix(in srgb, #c47b38, transparent 82%); color: #7a4a18; }
+.badge-over     { background: color-mix(in srgb, #4ea6e0, transparent 82%); color: #1860a0; }
+
+.theme-neon .badge-exact    { background: rgba(32,243,210,0.18); color: #20f3d2; }
+.theme-neon .badge-discount { background: rgba(196,123,56,0.18); color: #e4a055; }
+.theme-neon .badge-over     { background: rgba(78,166,224,0.18); color: #4ea6e0; }
+
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 1200px) {
   .wa-layout { grid-template-columns: 1fr 1fr; }

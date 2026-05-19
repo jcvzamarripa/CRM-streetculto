@@ -325,6 +325,7 @@ function renderClientes() {
 function openClientModal(id) {
   const c    = id ? state.clients.find(x => x.id === id) : null;
   const edit = !!c;
+  const today = new Date().toISOString().split('T')[0];
 
   showModal(`
     <h2>${edit ? 'Editar cliente' : 'Nuevo cliente'}</h2>
@@ -341,10 +342,83 @@ function openClientModal(id) {
         <label>Compras<input name="purchases" type="number" min="0" value="${c.purchases}" /></label>
         <label>Total gastado (MXN)<input name="totalSpent" type="number" min="0" value="${c.totalSpent}" /></label>
         <label>Última compra<input name="lastPurchase" type="date" value="${c.lastPurchase || ''}" /></label>
-      ` : ''}
+      ` : `
+        <div class="first-sale-panel">
+          <div class="first-sale-header">
+            <span class="modal-field-label">Primera venta</span>
+            <span class="first-sale-hint">¿Qué compró hoy?</span>
+          </div>
+          <label>Perfume
+            <select name="salePerfumeId" id="sale-perfume-sel">
+              <option value="">— Sin venta por ahora —</option>
+              ${state.perfumes.map(p =>
+                `<option value="${p.id}" data-price="${p.price}">${escHtml(p.name)}</option>`).join('')}
+            </select>
+          </label>
+          <div id="sale-price-block" class="sale-price-block hidden">
+            <label>Precio de lista
+              <input name="saleListPrice" id="sale-list-price" type="number" readonly tabindex="-1" />
+            </label>
+            <label>Monto real cobrado
+              <input name="saleRealPrice" id="sale-real-price" type="number" min="0" required />
+            </label>
+            <div id="sale-diff-badge" class="sale-diff-badge"></div>
+          </div>
+          <label>Fecha de venta
+            <input name="saleDate" id="sale-date" type="date" value="${today}" />
+          </label>
+        </div>
+      `}
       <label>Notas<textarea name="notes" rows="2">${escHtml(c?.notes || '')}</textarea></label>
       <button class="primary-button" type="submit">${edit ? 'Guardar cambios' : 'Agregar cliente'}</button>
     </form>`);
+
+  // ── Lógica del panel de primera venta ────────────────────
+  if (!edit) {
+    const perfSel   = document.getElementById('sale-perfume-sel');
+    const priceBlock = document.getElementById('sale-price-block');
+    const listInput = document.getElementById('sale-list-price');
+    const realInput = document.getElementById('sale-real-price');
+    const diffBadge = document.getElementById('sale-diff-badge');
+
+    function updateDiff() {
+      const list = parseInt(listInput.value) || 0;
+      const real = parseInt(realInput.value) || 0;
+      if (!list) { diffBadge.textContent = ''; return; }
+      if (real === list) {
+        diffBadge.className = 'sale-diff-badge badge-exact';
+        diffBadge.textContent = '✓ Precio de lista';
+      } else if (real < list) {
+        const diff = list - real;
+        diffBadge.className = 'sale-diff-badge badge-discount';
+        diffBadge.textContent = `Descuento de ${fmt(diff)}`;
+      } else {
+        const diff = real - list;
+        diffBadge.className = 'sale-diff-badge badge-over';
+        diffBadge.textContent = `+${fmt(diff)} sobre lista`;
+      }
+    }
+
+    perfSel.addEventListener('change', () => {
+      const opt = perfSel.selectedOptions[0];
+      const price = parseInt(opt?.dataset.price) || 0;
+      if (price) {
+        listInput.value = price;
+        realInput.value = price;
+        priceBlock.classList.remove('hidden');
+        realInput.required = true;
+        updateDiff();
+      } else {
+        priceBlock.classList.add('hidden');
+        realInput.required = false;
+        listInput.value = '';
+        realInput.value = '';
+        diffBadge.textContent = '';
+      }
+    });
+
+    realInput.addEventListener('input', updateDiff);
+  }
 
   document.getElementById('client-form').addEventListener('submit', e => {
     e.preventDefault();
@@ -360,11 +434,37 @@ function openClientModal(id) {
         notes: fd.get('notes'),
       };
     } else {
-      state.clients.push({
+      const salePerfumeId = fd.get('salePerfumeId');
+      const saleReal      = parseInt(fd.get('saleRealPrice')) || 0;
+      const saleDate      = fd.get('saleDate') || new Date().toISOString().split('T')[0];
+      const hasSale       = !!salePerfumeId && saleReal > 0;
+
+      const newClient = {
         id: uid(), name: fd.get('name'), phone: fd.get('phone'),
-        segment: fd.get('segment'), purchases: 0, totalSpent: 0,
-        lastPurchase: '', notes: fd.get('notes'),
-      });
+        segment:      fd.get('segment'),
+        purchases:    hasSale ? 1 : 0,
+        totalSpent:   hasSale ? saleReal : 0,
+        lastPurchase: hasSale ? saleDate : '',
+        notes: fd.get('notes'),
+      };
+      state.clients.push(newClient);
+
+      if (hasSale) {
+        const perf = state.perfumes.find(p => p.id === salePerfumeId);
+        if (perf) {
+          state.sales.push({
+            id: uid(),
+            clientId:    newClient.id,
+            clientName:  newClient.name,
+            perfumeId:   perf.id,
+            perfumeName: perf.name,
+            amount:      saleReal,
+            listPrice:   perf.price,
+            status:      'pagado',
+            date:        saleDate,
+          });
+        }
+      }
     }
     saveState(); closeModal(); renderClientes();
   });
