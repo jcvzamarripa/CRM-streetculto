@@ -682,35 +682,9 @@ function renderWhatsapp() {
   }));
 
   // Mandar WhatsApp
-  el.querySelector('#wa-open').addEventListener('click', async () => {
+  el.querySelector('#wa-open').addEventListener('click', () => {
     const perf = state.perfumes.find(p => p.id === wa.perfumeId);
     if (!perf) return;
-
-    // 1 cliente: intentar Web Share API (foto + texto, funciona en móvil)
-    if (wa.selected.length === 1) {
-      const client = state.clients.find(c => c.id === wa.selected[0]);
-      if (!client) return;
-      const msg = buildPlainMessage(client.name.split(' ')[0], perf);
-
-      if (perf.photo && navigator.canShare) {
-        try {
-          const blob = dataURLtoBlob(perf.photo);
-          const file = new File([blob], `${escHtml(perf.name)}.jpg`, { type: 'image/jpeg' });
-          if (navigator.canShare({ files: [file], text: msg })) {
-            await navigator.share({ files: [file], text: msg });
-            return;
-          }
-        } catch {
-          // usuario canceló o no soportado → caer al link
-        }
-      }
-
-      // Fallback escritorio: abrir wa.me con texto
-      window.open(`https://wa.me/52${client.phone}?text=${encodeURIComponent(msg)}`, '_blank');
-      return;
-    }
-
-    // Varios clientes: abrir wa.me para cada uno (sin foto, no se puede masivo)
     wa.selected.forEach(cid => {
       const client = state.clients.find(c => c.id === cid);
       if (!client) return;
