@@ -582,15 +582,40 @@ function renderWhatsapp() {
   }));
 
   // Mandar WhatsApp
-  el.querySelector('#wa-open').addEventListener('click', () => {
+  el.querySelector('#wa-open').addEventListener('click', async () => {
     const perf = state.perfumes.find(p => p.id === wa.perfumeId);
     if (!perf) return;
+
+    // 1 cliente: intentar Web Share API (foto + texto, funciona en móvil)
+    if (wa.selected.length === 1) {
+      const client = state.clients.find(c => c.id === wa.selected[0]);
+      if (!client) return;
+      const msg = buildPlainMessage(client.name.split(' ')[0], perf);
+
+      if (perf.photo && navigator.canShare) {
+        try {
+          const blob = dataURLtoBlob(perf.photo);
+          const file = new File([blob], `${escHtml(perf.name)}.jpg`, { type: 'image/jpeg' });
+          if (navigator.canShare({ files: [file], text: msg })) {
+            await navigator.share({ files: [file], text: msg });
+            return;
+          }
+        } catch {
+          // usuario canceló o no soportado → caer al link
+        }
+      }
+
+      // Fallback escritorio: abrir wa.me con texto
+      window.open(`https://wa.me/52${client.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      return;
+    }
+
+    // Varios clientes: abrir wa.me para cada uno (sin foto, no se puede masivo)
     wa.selected.forEach(cid => {
       const client = state.clients.find(c => c.id === cid);
       if (!client) return;
       const msg = buildPlainMessage(client.name.split(' ')[0], perf);
-      const url = `https://wa.me/52${client.phone}?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
+      window.open(`https://wa.me/52${client.phone}?text=${encodeURIComponent(msg)}`, '_blank');
     });
   });
 
@@ -630,6 +655,15 @@ function renderWhatsapp() {
     btn.disabled = true;
     setTimeout(() => renderWhatsapp(), 1400);
   });
+}
+
+function dataURLtoBlob(dataURL) {
+  const [header, data] = dataURL.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const binary = atob(data);
+  const arr = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+  return new Blob([arr], { type: mime });
 }
 
 function buildPlainMessage(firstName, perf) {
