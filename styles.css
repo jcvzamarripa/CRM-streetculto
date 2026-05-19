@@ -833,6 +833,20 @@ h1 {
   border-color: var(--accent);
 }
 
+.modal-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-field-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
 .modal-form .primary-button {
   margin-top: 6px;
   height: 46px;
@@ -879,6 +893,103 @@ h1 {
 
 .product-info p { margin: 6px 0 0; font-size: 0.82rem; line-height: 1.45; }
 .product-price { font-weight: 900; }
+
+/* ── PERFUME PHOTO (uploaded image) ────────────────────── */
+img.perfume-photo-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ── PHOTO UPLOAD (modal) ───────────────────────────────── */
+.photo-upload-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1.5px dashed var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 150ms;
+  overflow: hidden;
+}
+
+.photo-upload-area:hover { border-color: var(--accent); }
+
+.photo-thumb-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.photo-placeholder {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  background: var(--line);
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.photo-upload-hint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ── WHATSAPP PHOTO PREVIEW ─────────────────────────────── */
+.wa-photo-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+}
+
+.wa-photo-preview img {
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.wa-photo-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 120ms;
+  white-space: nowrap;
+}
+
+.wa-photo-download:hover { background: color-mix(in srgb, var(--accent), transparent 90%); }
+
+/* ── PERFUME OPTION THUMB (WhatsApp selector) ───────────── */
+.po-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
 
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 1200px) {

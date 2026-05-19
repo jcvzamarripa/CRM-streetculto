@@ -6,6 +6,29 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
+// ── Image utils ─────────────────────────────────────────
+function resizeImage(file, maxPx = 420, quality = 0.72) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+          else       { w = Math.round(w * maxPx / h); h = maxPx; }
+        }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 // ── Config ───────────────────────────────────────────────
 const SEGMENTS = {
   vip:       { label: 'VIP' },
@@ -366,7 +389,9 @@ function renderPerfumes() {
     <div class="perfumes-grid">
       ${state.perfumes.map(p => `
         <article class="perfume-card">
-          <div class="perfume-photo ${p.colorClass}">${p.name.charAt(0)}</div>
+          ${p.photo
+            ? `<img class="perfume-photo perfume-photo-img" src="${p.photo}" alt="${escHtml(p.name)}" />`
+            : `<div class="perfume-photo ${p.colorClass}">${p.name.charAt(0)}</div>`}
           <div class="perfume-body">
             <h3>${escHtml(p.name)}</h3>
             <p>${escHtml(p.description)}</p>
@@ -401,22 +426,44 @@ function openPerfumeModal(id) {
       <label>Descripción<textarea name="description" rows="2">${escHtml(p?.description || '')}</textarea></label>
       <label>Precio (MXN)<input name="price" type="number" min="0" required value="${p?.price ?? ''}" /></label>
       <label>Stock<input name="stock" type="number" min="0" required value="${p?.stock ?? 1}" /></label>
-      <label>Color de tarjeta
+      <label>Color de tarjeta (si no hay foto)
         <select name="colorClass">
           ${PERFUME_COLORS.map(c =>
             `<option value="${c}"${p?.colorClass === c ? ' selected' : ''}>${c}</option>`).join('')}
         </select>
       </label>
+      <div class="modal-field-group">
+        <span class="modal-field-label">FOTO DEL PERFUME</span>
+        <div class="photo-upload-area" id="photo-upload-area">
+          ${p?.photo
+            ? `<img class="photo-thumb-preview" id="photo-preview-img" src="${p.photo}" />`
+            : `<div class="photo-placeholder" id="photo-preview-img">📷</div>`}
+          <span class="photo-upload-hint">Haz clic para subir o cambiar</span>
+          <input type="file" id="photo-file-input" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;" />
+        </div>
+      </div>
       <button class="primary-button" type="submit">${edit ? 'Guardar cambios' : 'Agregar perfume'}</button>
     </form>`);
 
+  // Live photo preview
+  document.getElementById('photo-file-input').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const dataUrl = await resizeImage(file);
+    const prev = document.getElementById('photo-preview-img');
+    prev.outerHTML = `<img class="photo-thumb-preview" id="photo-preview-img" src="${dataUrl}" />`;
+    document.getElementById('photo-upload-area')._pendingPhoto = dataUrl;
+  });
+
   document.getElementById('perfume-form').addEventListener('submit', e => {
     e.preventDefault();
-    const fd = new FormData(e.target);
+    const fd   = new FormData(e.target);
+    const area = document.getElementById('photo-upload-area');
+    const photo = area._pendingPhoto ?? p?.photo ?? null;
     const data = {
       name: fd.get('name'), description: fd.get('description'),
       price: parseInt(fd.get('price')), stock: parseInt(fd.get('stock')),
-      colorClass: fd.get('colorClass'),
+      colorClass: fd.get('colorClass'), photo,
     };
     if (edit) {
       const idx = state.perfumes.findIndex(x => x.id === id);
@@ -471,7 +518,9 @@ function renderWhatsapp() {
         <div class="perfume-selector">
           ${state.perfumes.map(p => `
             <button class="perfume-option${wa.perfumeId === p.id ? ' selected' : ''}" data-po="${p.id}">
-              <span class="dot ${p.colorClass}"></span>
+              ${p.photo
+                ? `<img class="po-thumb" src="${p.photo}" alt="" />`
+                : `<span class="dot ${p.colorClass}"></span>`}
               <span>${escHtml(p.name)}</span>
               <strong>${fmt(p.price)}</strong>
             </button>`).join('')}
@@ -483,6 +532,12 @@ function renderWhatsapp() {
         <div class="step-badge">3</div>
         <div class="panel-heading compact"><div><span class="eyebrow">Mensaje</span><h2>Vista previa</h2></div></div>
         <div class="phone-preview">
+          ${selectedPerfume?.photo
+            ? `<div class="wa-photo-preview">
+                 <img src="${selectedPerfume.photo}" alt="${escHtml(selectedPerfume?.name || '')}" />
+                 <a class="wa-photo-download" download="${escHtml(selectedPerfume?.name || 'perfume')}.jpg" href="${selectedPerfume.photo}">⬇ Descargar foto</a>
+               </div>`
+            : ''}
           <div class="chat-bubble" id="wa-bubble">${buildPreview(visibleClients, selectedPerfume)}</div>
           <button class="ghost-button wide" id="wa-copy" ${hasBoth ? '' : 'disabled'}>Copiar mensaje</button>
           <button class="primary-button wide" id="wa-send" ${hasBoth ? '' : 'disabled'}>
@@ -565,9 +620,24 @@ function buildPreview(clients, perf) {
 }
 
 function refreshBubble(el, clients) {
-  const perf = state.perfumes.find(p => p.id === wa.perfumeId);
+  const perf   = state.perfumes.find(p => p.id === wa.perfumeId);
   const bubble = el.querySelector('#wa-bubble');
   if (bubble) bubble.innerHTML = buildPreview(clients, perf);
+
+  // Update photo block
+  const previewStep = el.querySelector('.wa-preview-step .phone-preview');
+  if (!previewStep) return;
+  let photoBlock = previewStep.querySelector('.wa-photo-preview');
+  if (perf?.photo) {
+    if (!photoBlock) {
+      photoBlock = document.createElement('div');
+      photoBlock.className = 'wa-photo-preview';
+      previewStep.insertBefore(photoBlock, bubble);
+    }
+    photoBlock.innerHTML = `<img src="${perf.photo}" alt="" /><a class="wa-photo-download" download="${escHtml(perf.name)}.jpg" href="${perf.photo}">⬇ Descargar foto</a>`;
+  } else if (photoBlock) {
+    photoBlock.remove();
+  }
 }
 
 // ── VENTAS ───────────────────────────────────────────────
