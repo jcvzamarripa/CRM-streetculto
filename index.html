@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StreetCulto CRM - Propuesta de diseno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="theme-minimal">
+    <main class="app-shell">
+      <aside class="sidebar" aria-label="Navegacion principal">
+        <div class="brand">
+          <div class="brand-mark">SC</div>
+          <div>
+            <strong>StreetCulto</strong>
+            <span>Perfume CRM</span>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item active" type="button">Panel</button>
+          <button class="nav-item" type="button">Clientes</button>
+          <button class="nav-item" type="button">Perfumes</button>
+          <button class="nav-item" type="button">WhatsApp</button>
+          <button class="nav-item" type="button">Ventas</button>
+        </nav>
+
+        <section class="sidebar-card">
+          <span class="eyebrow">Campana sugerida</span>
+          <h2>Promocion de fin de semana</h2>
+          <p>Enviar a clientes que compraron fragancias dulces en los ultimos 60 dias.</p>
+          <button class="primary-button" type="button">Preparar mensaje</button>
+        </section>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <span class="eyebrow">CRM para ventas por WhatsApp</span>
+            <h1>Seguimiento de clientes y perfumes disponibles</h1>
+          </div>
+          <div class="theme-switch" aria-label="Cambiar propuesta visual">
+            <button class="theme-button active" type="button" data-theme="minimal">Minimalista</button>
+            <button class="theme-button" type="button" data-theme="neon">Black neon</button>
+          </div>
+        </header>
+
+        <section class="metrics-grid" aria-label="Metricas principales">
+          <article class="metric-card">
+            <span>Ventas del mes</span>
+            <strong>$84,250</strong>
+            <small>+18% vs. mes anterior</small>
+          </article>
+          <article class="metric-card highlight">
+            <span>Mejor cliente</span>
+            <strong>Mariana Ruiz</strong>
+            <small>12 compras - $18,900</small>
+          </article>
+          <article class="metric-card">
+            <span>Mensajes enviados</span>
+            <strong>347</strong>
+            <small>62 respuestas recibidas</small>
+          </article>
+          <article class="metric-card">
+            <span>Perfumes activos</span>
+            <strong>42</strong>
+            <small>8 nuevos esta semana</small>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <article class="panel large-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">Catalogo</span>
+                <h2>Perfumes listos para promocionar</h2>
+              </div>
+              <button class="ghost-button" type="button">Subir fotos</button>
+            </div>
+
+            <div class="product-list">
+              <article class="product-row">
+                <div class="product-photo amber">A</div>
+                <div class="product-info">
+                  <h3>Aura Nocturna</h3>
+                  <p>Ambar, vainilla oscura y madera suave. Ideal para noche.</p>
+                </div>
+                <div class="product-price">$1,450</div>
+              </article>
+              <article class="product-row">
+                <div class="product-photo citrus">C</div>
+                <div class="product-info">
+                  <h3>Citrus Club</h3>
+                  <p>Salida fresca de toronja, limpio y energico para diario.</p>
+                </div>
+                <div class="product-price">$980</div>
+              </article>
+              <article class="product-row">
+                <div class="product-photo rose">R</div>
+                <div class="product-info">
+                  <h3>Rose Vice</h3>
+                  <p>Rosa moderna, almizcle y un fondo dulce elegante.</p>
+                </div>
+                <div class="product-price">$1,250</div>
+              </article>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading compact">
+              <div>
+                <span class="eyebrow">WhatsApp</span>
+                <h2>Mensaje automatico</h2>
+              </div>
+            </div>
+            <div class="phone-preview">
+              <div class="chat-bubble">
+                Hola Mariana, nos llego Aura Nocturna.
+                <br /><br />
+                Huele a ambar, vainilla oscura y madera suave. Perfecto para noche.
+                <br /><br />
+                Precio: $1,450. Te aparto uno?
+              </div>
+              <button class="primary-button wide" type="button">Enviar promocion</button>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading compact">
+              <div>
+                <span class="eyebrow">Clientes</span>
+                <h2>Segmentos utiles</h2>
+              </div>
+            </div>
+            <div class="segment-list">
+              <div><strong>VIP</strong><span>Compra cada mes</span></div>
+              <div><strong>Dulces</strong><span>Vainilla, caramelo, gourmand</span></div>
+              <div><strong>Frescos</strong><span>Citrico, limpio, oficina</span></div>
+              <div><strong>Reactivar</strong><span>Sin compra hace 90 dias</span></div>
+            </div>
+          </article>
+
+          <article class="panel large-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">Embudo</span>
+                <h2>Seguimiento de oportunidades</h2>
+              </div>
+              <button class="ghost-button" type="button">Nueva venta</button>
+            </div>
+            <div class="pipeline">
+              <div><span>Interesado</span><strong>28</strong></div>
+              <div><span>Respondio</span><strong>16</strong></div>
+              <div><span>Apartado</span><strong>9</strong></div>
+              <div><span>Pagado</span><strong>7</strong></div>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
