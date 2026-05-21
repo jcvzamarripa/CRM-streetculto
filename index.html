@@ -2,7 +2,10 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#fffaf2" id="theme-color-meta" />
     <title>StreetCulto CRM</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,7 +13,28 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="theme-minimal">
-    <main class="app-shell">
+
+    <!-- ── LOGIN SCREEN ── -->
+    <div id="login-screen" class="login-screen">
+      <div class="login-card">
+        <div class="login-brand">
+          <div class="brand-mark">SC</div>
+          <div>
+            <strong>StreetCulto</strong>
+            <span>Perfume CRM</span>
+          </div>
+        </div>
+        <h2 class="login-title">Acceso restringido</h2>
+        <form id="login-form" class="login-form" autocomplete="off">
+          <label>Usuario<input type="text" id="login-user" name="username" autocomplete="username" required /></label>
+          <label>Contraseña<input type="password" id="login-pass" name="password" autocomplete="current-password" required /></label>
+          <div id="login-error" class="login-error hidden">Usuario o contraseña incorrectos</div>
+          <button class="primary-button" type="submit">Entrar</button>
+        </form>
+      </div>
+    </div>
+
+    <main class="app-shell" id="main-app" style="display:none">
       <aside class="sidebar" aria-label="Navegación principal">
         <div class="brand">
           <div class="brand-mark">SC</div>
@@ -26,7 +50,10 @@
           <button class="nav-item" type="button" data-nav="perfumes">Perfumes</button>
           <button class="nav-item" type="button" data-nav="whatsapp">WhatsApp</button>
           <button class="nav-item" type="button" data-nav="ventas">Ventas</button>
+          <button class="nav-item" type="button" data-nav="credito">Crédito</button>
         </nav>
+
+        <button class="logout-btn" type="button" id="logout-btn">Cerrar sesión</button>
 
         <section class="sidebar-card">
           <span class="eyebrow">Campaña sugerida</span>
@@ -38,13 +65,16 @@
 
       <section class="workspace">
         <header class="topbar">
-          <div>
-            <span class="eyebrow" id="section-eyebrow"></span>
-            <h1 id="section-title"></h1>
+          <div class="topbar-left">
+            <div class="mob-topbar-brand">SC</div>
+            <div>
+              <span class="eyebrow" id="section-eyebrow"></span>
+              <h1 id="section-title"></h1>
+            </div>
           </div>
           <div class="theme-switch" aria-label="Cambiar tema visual">
             <button class="theme-button active" type="button" data-theme="minimal">Minimalista</button>
-            <button class="theme-button" type="button" data-theme="neon">Black neon</button>
+            <button class="theme-button" type="button" data-theme="neon">Neon</button>
           </div>
         </header>
 
@@ -53,8 +83,31 @@
         <section id="section-perfumes" class="content-section"></section>
         <section id="section-whatsapp" class="content-section"></section>
         <section id="section-ventas"   class="content-section"></section>
+        <section id="section-credito"  class="content-section"></section>
       </section>
     </main>
+
+    <!-- ── MOBILE BOTTOM NAV ── -->
+    <nav class="mob-nav" id="mob-nav" aria-label="Navegación móvil">
+      <button class="mob-nav-item active" type="button" data-nav="panel">
+        <span class="mob-icon">📊</span><span>Panel</span>
+      </button>
+      <button class="mob-nav-item" type="button" data-nav="clientes">
+        <span class="mob-icon">👤</span><span>Clientes</span>
+      </button>
+      <button class="mob-nav-item" type="button" data-nav="ventas">
+        <span class="mob-icon">📈</span><span>Ventas</span>
+      </button>
+      <button class="mob-nav-item" type="button" data-nav="credito">
+        <span class="mob-icon">💸</span><span>Crédito</span>
+      </button>
+      <button class="mob-nav-item" type="button" data-nav="whatsapp">
+        <span class="mob-icon">💬</span><span>WhatsApp</span>
+      </button>
+      <button class="mob-nav-item" type="button" data-nav="perfumes">
+        <span class="mob-icon">⚡</span><span>Perfumes</span>
+      </button>
+    </nav>
 
     <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
       <div class="modal-box">
